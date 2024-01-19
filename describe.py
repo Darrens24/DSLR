@@ -13,43 +13,31 @@ class Describe:
 
     def get_count(self):
         for col in self.stats:
-            count = 0
-            for i in self.data[col]:
-                if np.isnan(i) == False:
-                    count += 1
-            self.stats[col]["count"] = count
+            data_col = self.data[col].dropna()
+            self.stats[col]["count"] = data_col.shape[0]
 
     def get_mean(self):
         for col in self.stats:
-            mean = 0
-            for i in self.data[col]:
-                if np.isnan(i) == False:
-                    mean += i
-            self.stats[col]["mean"] = mean / self.stats[col]["count"]
+            data_col = self.data[col].dropna()
+            self.stats[col]["mean"] = sum(data_col) / self.stats[col]["count"]
 
     def get_std(self):
         for col in self.stats:
-            std = 0
-            for i in self.data[col]:
-                if np.isnan(i) == False:
-                    std += (i - self.stats[col]["mean"])**2
-            mean = self.stats[col]["mean"]
-            variance = mean / self.stats[col]["count"]
-            ecart_type = variance ** (1/2)
-            self.stats[col]["std"] = ecart_type
-
+            data_col = self.data[col].dropna()
+            variance = np.var(data_col, ddof=1)
+            self.stats[col]["std"] = np.sqrt(variance)
 
 def load_dataset(path):
     return pd.read_csv(path)
 
 def main(arg):
     data = load_dataset(arg[1])
-    print("Head of dataset is:", data.head())
-    print("--------------------")
-    print("Shape of dataset is:", data.shape)
-    print("--------------------")
-    print("Info of dataset is:")
-    data.info()
+    # print("Head of dataset is:", data.head())
+    # print("--------------------")
+    # print("Shape of dataset is:", data.shape)
+    # print("--------------------")
+    # print("Info of dataset is:")
+    # data.info()
     # print("--------------------")
     # print("Type of data is:", type(data))
     # print("--------------------")
