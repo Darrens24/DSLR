@@ -12,7 +12,15 @@ def load_dataset(path):
 def main(arg):
     data = load_dataset(arg[1])
     print("Head of dataset is:", data.head())
-    print("Type of data is:", type(data))
+    print("--------------------")
+    print("Shape of dataset is:", data.shape)
+    print("--------------------")
+    print("Info of dataset is:")
+    data.info()
+    # print("--------------------")
+    # print("Type of data is:", type(data))
+    # print("--------------------")
+    # print("Describe of dataset is:", data.describe())
 
 
 if __name__ == "__main__":
