@@ -9,7 +9,12 @@ class Describe:
         self.data = data
         numeric_cols = data.select_dtypes(include=[np.number]).columns
         self.stats = {col: {} for col in numeric_cols}
-        # print(self.stats)
+        self.get_count()
+        self.get_mean()
+        self.get_std()
+        self.get_min()
+        self.get_25()
+        self.get_max()
 
     def get_count(self):
         for col in self.stats:
@@ -26,6 +31,38 @@ class Describe:
             data_col = self.data[col].dropna()
             variance = np.var(data_col, ddof=1)
             self.stats[col]["std"] = np.sqrt(variance)
+
+    def get_min(self):
+        for col in self.stats:
+            self.stats[col]["min"] = self.data[col][0]
+            for i in self.data[col]:
+                if np.isnan(i) == False:
+                    if i < self.stats[col]["min"]:
+                        self.stats[col]["min"] = i
+
+    def get_25(self):
+        for col in self.stats:
+            data_col = self.data[col].dropna()
+            data_col = data_col.sort_values().reset_index(drop=True)
+            value = ((self.stats[col]["count"]) - 1) * 0.25
+            if value % 1 == 0:
+                value = int(value)
+                quartile = data_col[value]
+            else:
+                lower_value = int(value)
+                upper_value = lower_value + 1
+                interpolation = value - lower_value
+                quartile = (data_col[lower_value] * (1 - interpolation)) + (data_col[upper_value] * interpolation)
+            quartile = round(quartile, 6)
+            self.stats[col]["25%"] = quartile
+
+    def get_max(self):
+        for col in self.stats:
+            self.stats[col]["max"] = self.data[col][0]
+            for i in self.data[col]:
+                if np.isnan(i) == False:
+                    if i > self.stats[col]["max"]:
+                        self.stats[col]["max"] = i
 
 def load_dataset(path):
     return pd.read_csv(path)
@@ -47,10 +84,7 @@ def main(arg):
     pd.set_option('display.max_columns', None)
     # print(data.describe())
     myDescribe = Describe(data)
-    myDescribe.get_count()
-    myDescribe.get_mean()
-    myDescribe.get_std()
-    print(myDescribe.stats)
+    # print(myDescribe.stats)
 
 
 if __name__ == "__main__":
