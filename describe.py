@@ -60,6 +60,7 @@ class Describe:
     def get_var(self):
         """
         Finds the variance of every column.
+        We use the Bessel's correction to calculate the sample variance.
         """
         for col in self.stats:
             data_col = self.data[col].dropna()
@@ -173,8 +174,13 @@ class Describe:
                          "min", "25%", "50%", "75%", "max"]
         stats_data = {}
         for col in self.stats:
-            stats_data[col] = [str(self.stats[col].get(stat, 'NaN'))
-                               for stat in stats_headers]
+            stats_data[col] = []
+            for stat in stats_headers:
+                value = self.stats[col].get(stat, 'NaN')
+                if isinstance(value, float) or isinstance(value, int):
+                    stats_data[col].append(f"{value:.6f}")
+                else:
+                    stats_data[col].append(str(value))
 
         columns = list(self.stats.keys())
         cols_per_row = 3
