@@ -1,11 +1,11 @@
+import sys
 import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
 # import colorama
-from describe import Describe
-import sys
+
 
 def check_feature(data, feature1, feature2):
     if feature1 not in data.columns or feature2 not in data.columns:
@@ -22,6 +22,7 @@ def check_feature(data, feature1, feature2):
         return 1
     return 0
 
+
 def check_valid_feature(data, feature):
     if feature not in data.columns:
         print("Feature not found")
@@ -30,20 +31,21 @@ def check_valid_feature(data, feature):
         print("Feature must be numeric")
         return 1
     if feature == "Index":
-        print("Feature must not")
+        print("Feature can't be Index")
         return 1
     return 0
+
 
 def scatter_2_features(data, feature1, feature2):
     groups = data.groupby('Hogwarts House')
     if check_feature(data, feature1, feature2) == 1:
         return
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(8, 8))
     for name, group in groups:
         plt.scatter(group[feature1], group[feature2], label=name, s=10)
     title = feature1 + " vs " + feature2
-    plt.title(title , fontsize=14)
-    plt.xlabel(feature1 , fontsize=14, color='red')
+    plt.title(title, fontsize=14)
+    plt.xlabel(feature1, fontsize=14, color='red')
     plt.ylabel(feature2, fontsize=14, color='blue')
     plt.grid(True)
     plt.legend()
@@ -56,7 +58,8 @@ def scatter_all_features(data, feature):
         return
 
     numeric_cols = data.select_dtypes(include=[np.number]).columns
-    cols_to_plot = [col for col in numeric_cols if col != 'Index' and col != feature]
+    cols_to_plot = [col for col in numeric_cols if col !=
+                    'Index' and col != feature]
 
     n_cols = 2
     n_rows = 2
@@ -80,8 +83,10 @@ def scatter_all_features(data, feature):
 
     plt.show()
 
+
 def load_dataset(path):
     return pd.read_csv(path)
+
 
 def main(arg):
     data = load_dataset(arg[1])
@@ -94,12 +99,11 @@ def main(arg):
         scatter_all_features(data, feature)
     elif len(arg) == 2:
         scatter_2_features(data, "Astronomy", "Defense Against the Dark Arts")
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
 
 
 if __name__ == "__main__":
     sys.tracebacklimit = 0
-    assert len(sys.argv) == 4 or len(sys.argv) == 3 or len(sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
+    assert len(sys.argv) == 4 or len(sys.argv) == 3 or len(
+        sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
     assert sys.argv[1].endswith(".csv"), "Dataset must be a .csv file"
     main(sys.argv)
