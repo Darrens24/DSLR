@@ -40,13 +40,20 @@ def scatter_2_features(data, feature1, feature2):
     groups = data.groupby('Hogwarts House')
     if check_feature(data, feature1, feature2) == 1:
         return
+    colors = {
+        'Gryffindor': 'red',
+        'Hufflepuff': 'yellow',
+        'Ravenclaw': 'blue',
+        'Slytherin': 'green'
+    }
     plt.figure(figsize=(8, 8))
     for name, group in groups:
-        plt.scatter(group[feature1], group[feature2], label=name, s=10)
+        plt.scatter(group[feature1], group[feature2],
+                    label=name, s=10, color=colors[name])
     title = feature1 + " vs " + feature2
-    plt.title(title, fontsize=14)
-    plt.xlabel(feature1, fontsize=14, color='red')
-    plt.ylabel(feature2, fontsize=14, color='blue')
+    plt.title(title, fontsize=14, color='purple')
+    plt.xlabel(feature1, fontsize=14, color='purple')
+    plt.ylabel(feature2, fontsize=14, color='purple')
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -65,6 +72,13 @@ def scatter_all_features(data, feature):
     n_rows = 2
     n_plots_per_page = n_rows * n_cols
 
+    colors = {
+        'Gryffindor': 'red',
+        'Hufflepuff': 'yellow',
+        'Ravenclaw': 'blue',
+        'Slytherin': 'green'
+    }
+
     for i in range(0, len(cols_to_plot), n_plots_per_page):
         fig = plt.figure(figsize=(16, 16))
 
@@ -74,10 +88,11 @@ def scatter_all_features(data, feature):
             ax = fig.add_subplot(n_rows, n_cols, j + 1)
             col = cols_to_plot[i + j]
             for name, group in groups:
-                ax.scatter(group[feature], group[col], label=name, s=10)
-            ax.set_title(feature + " vs " + col, fontsize=14)
-            ax.set_xlabel(feature, fontsize=10, color='red')
-            ax.set_ylabel(col, fontsize=10, color='blue')
+                ax.scatter(group[feature], group[col],
+                           label=name, s=10, color=colors[name])
+            ax.set_title(feature + " vs " + col, fontsize=14, color='purple')
+            ax.set_xlabel(feature, fontsize=10, color='purple')
+            ax.set_ylabel(col, fontsize=10, color='purple')
             ax.grid(True)
             ax.legend()
 
