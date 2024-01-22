@@ -209,15 +209,11 @@ def load_dataset(path):
 def main(arg):
     """
     Main function:
-    - Loads the dataset, displaying all rows and columns
+    - Loads the dataset
     - Creates a Describe object for the dataset
     - Prints the statistics
     """
     data = load_dataset(arg[1])
-
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    # print(data.describe())
     myDescribe = Describe(data)
     myDescribe.print_stats()
 
