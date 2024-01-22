@@ -92,14 +92,14 @@ def main(arg):
     elif len(arg) == 3:
         feature = arg[2]
         scatter_all_features(data, feature)
-
-
+    elif len(arg) == 2:
+        scatter_2_features(data, "Astronomy", "Defense Against the Dark Arts")
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
 
 
 if __name__ == "__main__":
     sys.tracebacklimit = 0
-    assert len(sys.argv) == 4 or len(sys.argv) == 3, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
+    assert len(sys.argv) == 4 or len(sys.argv) == 3 or len(sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
     assert sys.argv[1].endswith(".csv"), "Dataset must be a .csv file"
     main(sys.argv)
