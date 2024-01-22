@@ -17,7 +17,10 @@ class Describe:
     - 25th percentile
     - 50th percentile (median)
     - 75th percentile
+    - interquartile range
     - maximum
+    - mode
+    - kurtosis
     """
 
     def __init__(self, data):
@@ -38,7 +41,10 @@ class Describe:
         self.get_25()
         self.get_50()
         self.get_75()
+        self.get_iqr()
         self.get_max()
+        self.get_mode()
+        self.get_kurtosis()
 
     def get_count(self):
         """
@@ -159,6 +165,50 @@ class Describe:
                     if i > self.stats[col]["max"]:
                         self.stats[col]["max"] = round(i, 6)
 
+    def get_mode(self):
+        """
+        Finds the mode of every column.
+        """
+        for col in self.stats:
+            data_col = self.data[col].dropna()
+            data_col = data_col.sort_values().reset_index(drop=True)
+            mode = data_col[0]
+            count = 0
+            max_count = 0
+            for i in range(1, len(data_col)):
+                if data_col[i] == data_col[i - 1]:
+                    count += 1
+                else:
+                    if count > max_count:
+                        max_count = count
+                        mode = data_col[i - 1]
+                    count = 0
+            self.stats[col]["mode"] = mode
+
+    def get_iqr(self):
+        """
+        Finds the interquartile range of every column.
+        It's less sensible to extreme values than the standard deviation.
+        """
+        for col in self.stats:
+            self.stats[col]["iqr"] = self.stats[col]["75%"] - \
+                self.stats[col]["25%"]
+
+    def get_kurtosis(self):
+        """
+        Finds the kurtosis of every column.
+        - If kurtosis > 3, the distribution is leptokurtic (more peaked).
+        - If kurtosis < 3, the distribution is platykurtic (less peaked).
+        - If kurtosis = 3, the distribution is mesokurtic (Gauss).
+        """
+        for col in self.stats:
+            data_col = self.data[col].dropna()
+            mean = self.stats[col]["mean"]
+            std = self.stats[col]["std"]
+            kurtosis = sum([((i - mean) / std)**4 for i in data_col]) / \
+                self.stats[col]["count"]
+            self.stats[col]["kurtosis"] = round(kurtosis, 6)
+
     def find_max_width(self, items):
         """
         Finds the maximum width of a list of strings.
@@ -170,8 +220,8 @@ class Describe:
         return max_width
 
     def print_stats(self):
-        stats_headers = ["count", "mean", "var", "std",
-                         "min", "25%", "50%", "75%", "max"]
+        first_col = next(iter(self.stats))
+        stats_headers = list(self.stats[first_col].keys())
         stats_data = {}
         for col in self.stats:
             stats_data[col] = []
