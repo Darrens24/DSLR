@@ -1,5 +1,5 @@
 import sys
-from scatter_plot import check_valid_feature, load_dataset
+from utils import check_valid_feature, load_dataset
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -92,6 +92,8 @@ def histogram_answer(data):
     plt.ylabel('Frequency')
     plt.legend()
 
+    mng = plt.get_current_fig_manager()
+    mng.window.showMaximized()
     plt.tight_layout()
     plt.show()
 
@@ -105,10 +107,8 @@ def main(arg):
         feature = arg[2]
         if feature == 'all':
             histogram_all_features(data)
-            return
         elif check_valid_feature(data, feature) == 0:
             histogram_feature(data, feature)
-            return
 
 
 if __name__ == "__main__":
