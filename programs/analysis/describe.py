@@ -8,6 +8,7 @@ class Describe:
     Class that computes descriptive statistics for a given dataset.
     It includes the following statistics, calculated on object initialization:
     - count
+    - missing values
     - mean
     - variance
     - standard deviation
@@ -32,6 +33,7 @@ class Describe:
         numeric_cols = data.select_dtypes(include=[np.number]).columns
         self.stats = {col: {} for col in numeric_cols}
         self.get_count()
+        self.get_missing_values()
         self.get_mean()
         self.get_var()
         self.get_std()
@@ -51,6 +53,17 @@ class Describe:
         for col in self.stats:
             data_col = self.data[col].dropna()
             self.stats[col]["count"] = data_col.shape[0]
+
+    def get_missing_values(self):
+        """
+        Finds the number of NaN values (%) in every column.
+        """
+        for col in self.stats:
+            data_col = self.data[col]
+            count = data_col.shape[0]
+            missing_values = count - self.stats[col]["count"]
+            self.stats[col]["missing(%)"] = round(
+                missing_values / count * 100, 6)
 
     def get_mean(self):
         """
