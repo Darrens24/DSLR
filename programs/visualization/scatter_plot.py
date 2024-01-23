@@ -51,9 +51,9 @@ def scatter_2_features(data, feature1, feature2):
         plt.scatter(group[feature1], group[feature2],
                     label=name, s=10, color=colors[name])
     title = feature1 + " vs " + feature2
-    plt.title(title, fontsize=14, color='purple')
-    plt.xlabel(feature1, fontsize=14, color='purple')
-    plt.ylabel(feature2, fontsize=14, color='purple')
+    plt.title(title, fontsize=14, color='black')
+    plt.xlabel(feature1, fontsize=14, color='black')
+    plt.ylabel(feature2, fontsize=14, color='black')
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -90,9 +90,9 @@ def scatter_all_features(data, feature):
             for name, group in groups:
                 ax.scatter(group[feature], group[col],
                            label=name, s=10, color=colors[name])
-            ax.set_title(feature + " vs " + col, fontsize=14, color='purple')
-            ax.set_xlabel(feature, fontsize=10, color='purple')
-            ax.set_ylabel(col, fontsize=10, color='purple')
+            ax.set_title(feature + " vs " + col, fontsize=14, color='black')
+            ax.set_xlabel(feature, fontsize=10, color='black')
+            ax.set_ylabel(col, fontsize=10, color='black')
             ax.grid(True)
             ax.legend()
 
