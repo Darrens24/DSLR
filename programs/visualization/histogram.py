@@ -7,6 +7,9 @@ matplotlib.use('Qt5Agg')
 
 
 def histogram_feature(data, feature):
+    """
+    Plot a histogram of a feature
+    """
     colors = {
         'Gryffindor': 'red',
         'Hufflepuff': 'yellow',
@@ -28,6 +31,9 @@ def histogram_feature(data, feature):
 
 
 def histogram_all_features(data):
+    """
+    Plot a histogram of all features
+    """
     colors = {
         'Gryffindor': 'red',
         'Hufflepuff': 'yellow',
@@ -62,6 +68,9 @@ def histogram_all_features(data):
 
 
 def histogram_answer(data):
+    """
+    Plot a histogram of Arithmancy and Care of Magical Creatures
+    """
     colors = {
         'Gryffindor': 'red',
         'Hufflepuff': 'yellow',
@@ -99,6 +108,12 @@ def histogram_answer(data):
 
 
 def main(arg):
+    """
+    Main function
+    If 1 feature is given, plot a histogram of this feature
+    If the given feature is 'all', plot a histogram of all features
+    If no feature is given, plot a histogram of the answer of the exercise
+    """
     data = load_dataset(arg[1])
     if len(arg) == 2:
         histogram_answer(data)
@@ -112,6 +127,11 @@ def main(arg):
 
 
 if __name__ == "__main__":
+    """
+    Call the main function
+    Check if the number of arguments is correct
+    Check if the dataset is a .csv file
+    """
     sys.tracebacklimit = 0
     assert len(sys.argv) == 3 or len(
         sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> (optionnal : <feature> or 'all')"

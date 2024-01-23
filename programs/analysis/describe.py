@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-# import matplotlib.pyplot as plt
-# import colorama
 import sys
 
 
@@ -220,6 +218,9 @@ class Describe:
         return max_width
 
     def print_stats(self):
+        """
+        Prints the statistics in a pretty format.
+        """
         first_col = next(iter(self.stats))
         stats_headers = list(self.stats[first_col].keys())
         stats_data = {}

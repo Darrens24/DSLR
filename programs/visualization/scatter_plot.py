@@ -7,6 +7,9 @@ matplotlib.use('Qt5Agg')
 
 
 def scatter_2_features(data, feature1, feature2):
+    """
+    Plot a scatter plot of 2 features
+    """
     groups = data.groupby('Hogwarts House')
     if check_feature(data, feature1, feature2) == 1:
         return
@@ -30,6 +33,9 @@ def scatter_2_features(data, feature1, feature2):
 
 
 def scatter_all_features(data, feature):
+    """
+    Plot a scatter plot of all features
+    """
     groups = data.groupby('Hogwarts House')
     if check_valid_feature(data, feature) == 1:
         return
@@ -70,6 +76,12 @@ def scatter_all_features(data, feature):
 
 
 def main(arg):
+    """
+    Main function
+    If 2 features are given, plot a scatter plot of these 2 features
+    If 1 feature is given, plot every plots of this feature with all the others
+    If no feature is given, plot a scatter plot of the answer of the exercise
+    """
     data = load_dataset(arg[1])
     if len(arg) == 4:
         feature1 = arg[2]
@@ -83,6 +95,10 @@ def main(arg):
 
 
 if __name__ == "__main__":
+    """
+    Check if the number of arguments is correct
+    Check if the dataset is a .csv file
+    """
     sys.tracebacklimit = 0
     assert len(sys.argv) == 4 or len(sys.argv) == 3 or len(
         sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
