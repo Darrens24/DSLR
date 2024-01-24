@@ -62,6 +62,7 @@ def clean_normalize_data(data):
     print("Astronomy:", cleaned_data["Astronomy"])
     print("-*-"*50)
     print("cleaned_data:", cleaned_data)
+    np.save("cleaned_data.npy", cleaned_data)
     return cleaned_data
 
 
