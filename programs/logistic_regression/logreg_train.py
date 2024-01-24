@@ -47,8 +47,8 @@ def clean_normalize_data(data):
                   "Potions", "Charms", "Flying"]]
     print("marks:", marks)
     myDescribe = Describe(marks)
-    myDescribe.print_stats()
-    print("-*-"*10)
+    # myDescribe.print_stats()
+    print("-*-"*50)
     print("type of myDescribe.stats:", type(myDescribe.stats))
     print("marks.columns:", marks.columns)
     # print("myDescribe.mean:", myDescribe.stats["Astronomy"]["mean"])
@@ -57,6 +57,10 @@ def clean_normalize_data(data):
         mean = myDescribe.stats[subject]["mean"]
         std = myDescribe.stats[subject]["std"]
         cleaned_data[subject] = (marks[subject] - mean) / std
+    print("-*-"*50)
+    print("type of cleaned_data:", type(cleaned_data))
+    print("Astronomy:", cleaned_data["Astronomy"])
+    print("-*-"*50)
     print("cleaned_data:", cleaned_data)
     return cleaned_data
 
