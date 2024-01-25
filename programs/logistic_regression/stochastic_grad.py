@@ -8,6 +8,30 @@ import sys
 
 
 def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
+    """
+    Performs stochastic gradient descent on the dataset (X, y).
+    It uses random permutations of the dataset to update Theta,
+    usefull when the dataset is too big to fit in memory, or
+    to avoid local minima.
+
+    Parameters
+    ----------
+    X(m, n) : numpy.ndarray
+        Matrix with m training examples and n features.
+    y(m, 1) : numpy.ndarray
+        Vector with m labels.
+    Theta(n, 1) : numpy.ndarray
+        Matrix with n parameters.
+    alpha : float
+        Learning rate.
+    iter : int
+        Number of iterations.
+
+    Returns
+    -------
+    Theta : numpy.ndarray
+        Matrix with updated parameters.
+    """
     m = len(y)
     J_history = []
     for i in range(iter):
@@ -23,6 +47,32 @@ def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
 
 
 def logistic_minibatch_gradient_descent(X, y, Theta, alpha, iter, batch_size):
+    """
+    Performs minibatch gradient descent on the dataset (X, y).
+    Like stochastic gradient descent, it uses random permutations
+    of the dataset to update Theta, but it uses batches of size
+    batch_size instead of single examples.
+
+    Parameters
+    ----------
+    X(m, n) : numpy.ndarray
+        Matrix with m training examples and n features.
+    y(m, 1) : numpy.ndarray
+        Vector with m labels.
+    Theta(n, 1) : numpy.ndarray
+        Matrix with n parameters.
+    alpha : float
+        Learning rate.
+    iter : int
+        Number of iterations.
+    batch_size : int
+        Size of the batches.
+
+    Returns
+    -------
+    Theta : numpy.ndarray
+        Matrix with updated parameters.
+    """
     m = len(y)
     J_history = []
     for i in range(iter):
@@ -39,6 +89,34 @@ def logistic_minibatch_gradient_descent(X, y, Theta, alpha, iter, batch_size):
 
 
 def logistic_momentum_gradient_descent(X, y, Theta, alpha, beta, iter):
+    """
+    Performs momentum gradient descent on the dataset (X, y).
+    Momentum is a method that helps accelerate SGD in the
+    relevant direction and dampens oscillations.
+    We can compare it to a ball rolling down a hill, Beta being
+    the friction coefficient, v being the velocity of the ball
+    and Theta being the position of the ball.
+
+    Parameters
+    ----------
+    X(m, n) : numpy.ndarray
+        Matrix with m training examples and n features.
+    y(m, 1) : numpy.ndarray
+        Vector with m labels.
+    Theta(n, 1) : numpy.ndarray
+        Matrix with n parameters.
+    alpha : float
+        Learning rate.
+    beta : float
+        Momentum hyperparameter.
+    iter : int
+        Number of iterations.
+
+    Returns
+    -------
+    Theta : numpy.ndarray
+        Matrix with updated parameters.
+    """
     # we added a column of 1s to X in logreg_train.py
     # so the bias is already included in Theta
     J_history = []
