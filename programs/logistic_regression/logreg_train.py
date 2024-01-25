@@ -2,9 +2,9 @@ import numpy as np
 from programs.analysis.describe import Describe
 from programs.logistic_regression.utils import load_dataset
 import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..')))
+# import os
+# sys.path.append(os.path.abspath(os.path.join(
+#     os.path.dirname(__file__), '..', '..')))
 # import matplotlib.pyplot as plt
 
 

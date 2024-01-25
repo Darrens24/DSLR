@@ -1,7 +1,10 @@
-import sys
-import numpy as np
-from colorama import Fore
 from logreg_train import logistic_cost_function, logistic_gradient
+from colorama import Fore
+import numpy as np
+# import os
+import sys
+# sys.path.append(os.path.abspath(os.path.join(
+#     os.path.dirname(__file__), '..', '..')))
 
 
 def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
@@ -19,9 +22,41 @@ def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
     return Theta, J_history
 
 
+def logistic_minibatch_gradient_descent(X, y, Theta, alpha, iter, batch_size):
+    m = len(y)
+    J_history = []
+    for i in range(iter):
+        indices = np.random.permutation(m)
+        X = X[indices]
+        y = y[indices]
+        for j in range(0, m, batch_size):
+            # Maybe we need to reshape X and Y here
+            end = j + batch_size if j + batch_size < m else m
+            grad = logistic_gradient(X[j:end], y[j:end], Theta)
+            Theta = Theta - alpha * grad
+        J_history.append(logistic_cost_function(X, y, Theta))
+    return Theta, J_history
+
+
+def logistic_momentum_gradient_descent(X, y, Theta, alpha, beta, iter):
+    # we added a column of 1s to X in logreg_train.py
+    # so the bias is already included in Theta
+    J_history = []
+    v = np.zeros(Theta.shape)
+
+    for i in range(iter):
+        grad = logistic_gradient(X, y, Theta)
+        v = beta * v + (1 - beta) * grad
+        Theta = Theta - alpha * v
+        J_history.append(logistic_cost_function(X, y, Theta))
+
+    return Theta, J_history
+
+
 def main():
     # pickle allows to use objects in Python
     # it's disabled by default for security reasons
+
     try:
         data = np.load("cleaned_data.npy", allow_pickle=True)
     except FileNotFoundError:
@@ -34,8 +69,8 @@ def main():
     print("data:", data)
     print("-*-"*50)
     dict_data = data.item()
-    print("type of test:", type(dict_data))
-    print("test:", dict_data)
+    print("type of dict_data:", type(dict_data))
+    print("dict_data:", dict_data)
     np_data = np.array(list(dict_data.values()))
     print("type of np_data:", type(np_data))
     print("np_data:", np_data)
