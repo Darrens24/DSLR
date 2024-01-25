@@ -1,10 +1,13 @@
 import numpy as np
-from programs.analysis.describe import Describe
-from programs.logistic_regression.utils import load_dataset
+import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..')))
+from programs.analysis.describe import Describe
+from programs.logistic_regression.utils import load_dataset
+from sklearn.metrics import accuracy_score
+
 # import matplotlib.pyplot as plt
 
 
@@ -15,6 +18,7 @@ def sigmoid(z):
 def logistic_cost_function(X, y, Theta):
     m = len(y)
     h = sigmoid(X.dot(Theta))
+
     J = (-1/m) * (np.log(h).T.dot(y) + np.log(1-h).T.dot(1-y))
     return J
 
@@ -22,6 +26,7 @@ def logistic_cost_function(X, y, Theta):
 def logistic_gradient(X, y, Theta):
     m = len(y)
     h = sigmoid(X.dot(Theta))
+
     grad = (1/m) * X.T.dot(h-y)
     return grad
 
@@ -29,47 +34,58 @@ def logistic_gradient(X, y, Theta):
 def logistic_gradient_descent(X, y, Theta, alpha, iter):
     J_history = []
     for i in range(iter):
+
         grad = logistic_gradient(X, y, Theta)
         Theta = Theta - alpha * grad
+
         J_history.append(logistic_cost_function(X, y, Theta))
     return Theta, J_history
 
+def prepare_features(normalized_data):
+    features = pd.DataFrame(normalized_data)
+    return features.values
 
-def logistic_regression(data):
-    return
+def prepare_classes(classes):
+    unique_classes = np.unique(classes)
+    classes_num = {classe: i for i, classe in enumerate(unique_classes)}
+    return classes.map(classes_num)
 
-
+def logistic_regression(X, y, alpha, iter):
+    m, n = X.shape
+    num_labels = len(np.unique(y))
+    X = np.insert(X, 0, 1, axis=1)
+    all_theta = np.zeros((num_labels, n+1 ))
+    for i in range(num_labels):
+        init_theta = np.zeros(n + 1)
+        y_c = np.where(y == i, 1, 0)
+        theta, J_history = logistic_gradient_descent(X, y_c, init_theta, alpha, iter)
+        all_theta[i] = theta
+    return all_theta, J_history
+    
 def clean_normalize_data(data):
     houses = data["Hogwarts House"]
-    print("houses:", houses)
     marks = data[["Astronomy", "Herbology", "Divination", "Muggle Studies",
                   "Ancient Runes", "History of Magic", "Transfiguration",
                   "Potions", "Charms", "Flying"]]
-    print("marks:", marks)
     myDescribe = Describe(marks)
-    # myDescribe.print_stats()
-    print("-*-"*50)
-    print("type of myDescribe.stats:", type(myDescribe.stats))
-    print("marks.columns:", marks.columns)
-    # print("myDescribe.mean:", myDescribe.stats["Astronomy"]["mean"])
     cleaned_data = {}
     for subject in marks.columns:
+        marks[subject] = marks[subject].fillna(myDescribe.stats[subject]["mean"])
         mean = myDescribe.stats[subject]["mean"]
         std = myDescribe.stats[subject]["std"]
         cleaned_data[subject] = (marks[subject] - mean) / std
-    print("-*-"*50)
-    print("type of cleaned_data:", type(cleaned_data))
-    print("Astronomy:", cleaned_data["Astronomy"])
-    print("-*-"*50)
-    print("cleaned_data:", cleaned_data)
-    return cleaned_data
+    return cleaned_data, houses
 
 
 def main(arg):
+    np.set_printoptions(suppress=True)
     data = load_dataset(arg)
-    print("data:", data)
-    normalized_data = clean_normalize_data(data)
-    result = logistic_regression(normalized_data)
+    normalized_data, classes = clean_normalize_data(data)
+    X = prepare_features(normalized_data)
+    y = prepare_classes(classes)
+    result, cost_history = logistic_regression(X, y, alpha=0.1, iter=1000)
+    result = np.array(result)
+    np.save("./programs/logistic_regression/theta.npy", result)    
     return
 
 
