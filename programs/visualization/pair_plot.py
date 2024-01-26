@@ -11,6 +11,11 @@ rcParams['toolbar'] = 'None'
 def main(arg):
     """
     Plot a pair plot of the dataset
+
+    Parameters
+    ----------
+    arg : list
+        List with the path to the dataset.
     """
     colors = {
         'Gryffindor': 'red',

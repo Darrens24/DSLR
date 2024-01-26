@@ -11,8 +11,6 @@ from programs.analysis.describe import Describe
 from programs.logistic_regression.utils import load_dataset
 from sklearn.metrics import accuracy_score
 
-# import matplotlib.pyplot as plt
-
 
 def sigmoid(z):
     """
@@ -128,17 +126,69 @@ def logistic_gradient_descent(X, y, Theta, alpha, iter):
     return Theta, J_history
 
 def prepare_features(normalized_data):
+    """
+    Prepares the features for the model.
+    We insert a column of ones at the beginning of the matrix
+    to account for the bias term.
+
+    Parameters
+    ----------
+    normalized_data : dict
+        Dictionary with the normalized data.
+    
+    Returns
+    -------
+    numpy.ndarray
+        Matrix with the features.
+    """
     features = pd.DataFrame(normalized_data)
     numeric_features = features.select_dtypes(include=[np.number])
     numeric_features = np.insert(numeric_features, 0, 1, axis=1)
     return numeric_features
 
 def prepare_classes(classes):
+    """
+    Prepares the classes for the model.
+    We map the classes to integers.
+
+    Parameters
+    ----------
+    classes : pandas.Series
+        Series with the classes.
+    
+    Returns
+    -------
+    pandas.Series
+        Series with the classes.
+    """
     unique_classes = np.unique(classes)
     classes_num = {classe: i for i, classe in enumerate(unique_classes)}
     return classes.map(classes_num)
 
 def logistic_regression(X, y, alpha, iter):
+    """
+    Performs logistic regression on the dataset (X, y).
+    It uses the gradient of our logistic regression model
+    to update Theta for each class.
+
+    Parameters
+    ----------
+    X(m, n) : numpy.ndarray
+        Matrix with m training examples and n features.
+    y(m, 1) : numpy.ndarray
+        Vector with m labels.
+    alpha : float
+        Learning rate.
+    iter : int
+        Number of iterations.
+
+    Returns
+    -------
+    all_theta : numpy.ndarray
+        Matrix with updated parameters.
+    J_historytab : list
+        List with the cost function for each iteration.
+    """
     m, n = X.shape
     num_labels = len(np.unique(y))
     all_theta = np.zeros((num_labels, n))
@@ -179,8 +229,10 @@ def clean_normalize_data(data):
                   "Potions", "Charms", "Flying"]]
     myDescribe = Describe(marks)
     cleaned_data = {}
+
     for subject in marks.columns:
-        marks[subject] = marks[subject].fillna(myDescribe.stats[subject]["mean"])
+        mean_value = myDescribe.stats[subject]["mean"]
+        marks.loc[:, subject] = marks.loc[:, subject].fillna(mean_value)
         mean = myDescribe.stats[subject]["mean"]
         std = myDescribe.stats[subject]["std"]
         cleaned_data[subject] = (marks[subject] - mean) / std
@@ -189,6 +241,18 @@ def clean_normalize_data(data):
 
 
 def main(arg):
+    """
+    Main function.
+    We load the dataset, clean and normalize the data, prepare the features
+    and the classes, then we perform logistic regression on the dataset
+    and save the parameters in a numpy file.
+    We plot the cost function over the iterations.
+
+    Parameters
+    ----------
+    arg : str
+        Path to the dataset.
+    """
     np.set_printoptions(suppress=True)
     data = load_dataset(arg)
     normalized_data, classes = clean_normalize_data(data)

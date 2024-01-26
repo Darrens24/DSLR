@@ -9,6 +9,13 @@ matplotlib.use('Qt5Agg')
 def histogram_feature(data, feature):
     """
     Plot a histogram of a feature
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        DataFrame with the data.
+    feature : str
+        Name of the feature.
     """
     colors = {
         'Gryffindor': 'red',
@@ -33,6 +40,11 @@ def histogram_feature(data, feature):
 def histogram_all_features(data):
     """
     Plot a histogram of all features
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        DataFrame with the data.
     """
     colors = {
         'Gryffindor': 'red',
@@ -70,6 +82,11 @@ def histogram_all_features(data):
 def histogram_answer(data):
     """
     Plot a histogram of Arithmancy and Care of Magical Creatures
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        DataFrame with the data.
     """
     colors = {
         'Gryffindor': 'red',
@@ -113,6 +130,11 @@ def main(arg):
     If 1 feature is given, plot a histogram of this feature
     If the given feature is 'all', plot a histogram of all features
     If no feature is given, plot a histogram of the answer of the exercise
+
+    Parameters
+    ----------
+    arg : list
+        List with the command line arguments.
     """
     data = load_dataset(arg[1])
     if len(arg) == 2:

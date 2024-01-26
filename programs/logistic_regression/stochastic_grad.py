@@ -52,7 +52,6 @@ def logistic_stochastic_gradient_descent(X, y, alpha, iter):
             J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[i] = Theta.T
         g_J_history.extend(J_history)
-    print(all_theta)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
     return all_theta, g_J_history
@@ -102,7 +101,6 @@ def logistic_minibatch_gradient_descent(X, y, alpha, iter, batch_size):
             J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[i] = Theta.T
         g_J_history.extend(J_history)
-    print(all_theta)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
     return all_theta, g_J_history
@@ -159,7 +157,25 @@ def logistic_momentum_gradient_descent(X, y, alpha, beta, iter):
 
 
 def main(argv):
-    
+    """
+    Main function.
+    We load the dataset, get the normalize for the previous log_reg train, 
+    prepare the features and the classes, then we perform logistic regression
+    with the chosen method.
+    We plot the cost function over the iterations.
+
+    Parameters
+    ----------
+    argv : list
+        List with the command line arguments.
+
+    Raises
+    ------
+    AssertionError
+        If the number of arguments is not 2.
+    AssertionError
+        If the argument is not "stochastic" or "momentum" or "mini-batch".
+    """
     try:
         data = np.load("./programs/logistic_regression/cleaned_data.npz", allow_pickle=True)
     except FileNotFoundError:
@@ -190,7 +206,7 @@ def main(argv):
     plt.plot(history)
     plt.xlabel('Iterations')
     plt.ylabel('Cost')
-    plt.title('Cost Function over Iterations')
+    plt.title(method + ' : Cost Function over Iterations')
     plt.show()
     return
 
