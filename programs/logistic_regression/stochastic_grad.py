@@ -5,13 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Qt5Agg')
-
 import pandas as pd
-# import os
 import sys
 from sklearn.metrics import accuracy_score
-# sys.path.append(os.path.abspath(os.path.join(
-#     os.path.dirname(__file__), '..', '..')))
 
 
 def logistic_stochastic_gradient_descent(X, y, alpha, iter):
@@ -47,15 +43,14 @@ def logistic_stochastic_gradient_descent(X, y, alpha, iter):
         Theta = np.random.randn(n)
         y_c = np.where(y == i, 1, 0)
         J_history = []
-
         for iteration in range(iter):
             random_index = np.random.randint(m)
             X_shuffle = X[random_index]
             y_shuffle = y_c[random_index]
             grad = logistic_gradient(X_shuffle, y_shuffle, Theta)
             Theta = Theta - alpha * grad
-            J_history.append(logistic_cost_function(X, y, Theta))
-        all_theta[i] = Theta.T   
+            J_history.append(logistic_cost_function(X, y_c, Theta))
+        all_theta[i] = Theta.T
         g_J_history.extend(J_history)
     print(all_theta)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
@@ -92,27 +87,28 @@ def logistic_minibatch_gradient_descent(X, y, alpha, iter, batch_size):
     """
     m, n = X.shape
     num_classes = len(np.unique(y))
-    J_history = []
+    g_J_history = []
     all_theta = np.zeros((num_classes, n))
     for i in range(num_classes):
-        Theta = np.random.randn(n + 1, 1)
-        y_c = (y == i).astype(int)
+        Theta = np.random.randn(n)
+        y_c = np.where(y == i, 1, 0)
+        J_history = []
         for iteration in range(iter):
             indices = np.random.choice(m, batch_size, replace=False)
             X_shuffle = X[indices]
             y_shuffle = y_c[indices]
             grad = logistic_gradient(X_shuffle, y_shuffle, Theta)
             Theta = Theta - alpha * grad
-            if i == 3:
-                J_history.append(logistic_cost_function(X, y, Theta))
+            J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[i] = Theta.T
+        g_J_history.extend(J_history)
     print(all_theta)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
-    return all_theta, J_history
+    return all_theta, g_J_history
 
 
-def logistic_momentum_gradient_descent(X, y, Theta, alpha, beta, iter):
+def logistic_momentum_gradient_descent(X, y, alpha, beta, iter):
     """
     Performs momentum gradient descent on the dataset (X, y).
     Momentum is a method that helps accelerate SGD in the
@@ -141,24 +137,29 @@ def logistic_momentum_gradient_descent(X, y, Theta, alpha, beta, iter):
     Theta : numpy.ndarray
         Matrix with updated parameters.
     """
-    # we added a column of 1s to X in logreg_train.py
-    # so the bias is already included in Theta
-    J_history = []
-    v = np.zeros(Theta.shape)
+    m, n = X.shape
+    g_J_history = []
+    num_classes = len(np.unique(y))
+    all_theta = np.zeros((num_classes, n))
+    for j in range(num_classes):
+        y_c = np.where(y == j, 1, 0)
+        Theta = np.zeros(n)
+        v = np.zeros(Theta.shape)
+        J_history = []
+        for i in range(iter):
+            grad = logistic_gradient(X, y_c, Theta)
+            v = beta * v + (1 - beta) * grad
+            Theta = Theta - alpha * v
+            J_history.append(logistic_cost_function(X, y_c, Theta))
+        all_theta[j] = Theta.T
+        g_J_history.extend(J_history)
+    accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
+    print(f"Accuracy: {accuracy}")
+    return all_theta, g_J_history
 
-    for i in range(iter):
-        grad = logistic_gradient(X, y, Theta)
-        v = beta * v + (1 - beta) * grad
-        Theta = Theta - alpha * v
-        J_history.append(logistic_cost_function(X, y, Theta))
 
-    return Theta, J_history
-
-
-def main():
-    # pickle allows to use objects in Python
-    # it's disabled by default for security reasons
-
+def main(argv):
+    
     try:
         data = np.load("./programs/logistic_regression/cleaned_data.npz", allow_pickle=True)
     except FileNotFoundError:
@@ -172,9 +173,20 @@ def main():
     houses_df = pd.Series(houses_array)
     X = prepare_features(cleaned_data)
     y = prepare_classes(houses_df)
-    all_theta, history = logistic_stochastic_gradient_descent(X, y, alpha=0.1, iter=1000)
-    # all_thetaMB, historyMB = logistic_minibatch_gradient_descent(X, y, alpha=0.1, iter=1000, batch_size=10)
-
+    method = argv
+    switcher = {
+        "stochastic": logistic_stochastic_gradient_descent,
+        "momentum": logistic_momentum_gradient_descent,
+        "mini-batch": logistic_minibatch_gradient_descent
+    }
+    if method in switcher:
+        gradient_descent_function = switcher[method]
+        if method == "stochastic":
+            all_theta, history = gradient_descent_function(X, y, alpha=0.1, iter=1000)
+        elif method == "momentum":
+            all_theta, history = gradient_descent_function(X, y, alpha=0.1, beta=0.9, iter=1000)
+        elif method == "mini-batch":
+            all_theta, history = gradient_descent_function(X, y, alpha=0.1, iter=1000, batch_size=10)
     plt.plot(history)
     plt.xlabel('Iterations')
     plt.ylabel('Cost')
@@ -184,5 +196,6 @@ def main():
 
 
 if __name__ == "__main__":
-    assert len(sys.argv) == 1, "Usage: python stochastic_grad.py"
-    main()
+    assert len(sys.argv) == 2, "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
+    assert sys.argv[1] == "stochastic" or sys.argv[1] == "momentum" or sys.argv[1] == "mini-batch", "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
+    main(sys.argv[1])
