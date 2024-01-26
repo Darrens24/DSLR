@@ -122,6 +122,7 @@ if __name__ == "__main__":
     """
     sys.tracebacklimit = 0
     assert len(sys.argv) == 4 or len(sys.argv) == 3 or len(
-        sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> <first_feature> (optionnal : <second_feature>)"
-    assert sys.argv[1].endswith(".csv"), "Dataset must be a .csv file"
+        sys.argv) == 2, "Usage: python scatter_plot.py <your_dataset.csv> (optionnal : <first_feature> OR <first_feature second_feature>)"
+    assert sys.argv[1].endswith(
+        "dataset_train.csv"), "Dataset must be dataset_train.csv"
     main(sys.argv)

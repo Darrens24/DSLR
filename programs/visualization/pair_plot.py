@@ -52,5 +52,6 @@ if __name__ == "__main__":
     """
     sys.tracebacklimit = 0
     assert len(sys.argv) == 2, "Usage: python pair_plot.py <your_dataset.csv>"
-    assert sys.argv[1].endswith(".csv"), "Dataset must be a .csv file"
+    assert sys.argv[1].endswith(
+        "dataset_train.csv"), "Dataset must be dataset_train.csv"
     main(sys.argv)

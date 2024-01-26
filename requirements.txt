@@ -4,3 +4,4 @@ colorama==0.4.6
 numpy==1.26.3
 PyQt5==5.15.10
 seaborn==0.13.1
+scikit-learn==1.4.0

@@ -1,3 +1,6 @@
+from sklearn.metrics import accuracy_score
+import sys
+import pandas as pd
 from logreg_train import logistic_cost_function, logistic_gradient
 from logreg_train import prepare_classes, prepare_features, sigmoid
 from colorama import Fore
@@ -5,9 +8,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Qt5Agg')
-import pandas as pd
-import sys
-from sklearn.metrics import accuracy_score
 
 
 def logistic_stochastic_gradient_descent(X, y, alpha, iter):
@@ -52,7 +52,8 @@ def logistic_stochastic_gradient_descent(X, y, alpha, iter):
             J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[i] = Theta.T
         g_J_history.extend(J_history)
-    accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
+    accuracy = accuracy_score(y, np.argmax(
+        sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
     return all_theta, g_J_history
 
@@ -101,7 +102,8 @@ def logistic_minibatch_gradient_descent(X, y, alpha, iter, batch_size):
             J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[i] = Theta.T
         g_J_history.extend(J_history)
-    accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
+    accuracy = accuracy_score(y, np.argmax(
+        sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
     return all_theta, g_J_history
 
@@ -151,7 +153,8 @@ def logistic_momentum_gradient_descent(X, y, alpha, beta, iter):
             J_history.append(logistic_cost_function(X, y_c, Theta))
         all_theta[j] = Theta.T
         g_J_history.extend(J_history)
-    accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
+    accuracy = accuracy_score(y, np.argmax(
+        sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
     return all_theta, g_J_history
 
@@ -177,7 +180,8 @@ def main(argv):
         If the argument is not "stochastic" or "momentum" or "mini-batch".
     """
     try:
-        data = np.load("./programs/logistic_regression/cleaned_data.npz", allow_pickle=True)
+        data = np.load(
+            "./programs/logistic_regression/cleaned_data.npz", allow_pickle=True)
     except FileNotFoundError:
         print(Fore.RED + "[ERROR]" + Fore.RESET +
               " File 'cleaned_data.npy' not found.")
@@ -198,11 +202,14 @@ def main(argv):
     if method in switcher:
         gradient_descent_function = switcher[method]
         if method == "stochastic":
-            all_theta, history = gradient_descent_function(X, y, alpha=0.1, iter=1000)
+            all_theta, history = gradient_descent_function(
+                X, y, alpha=0.1, iter=1000)
         elif method == "momentum":
-            all_theta, history = gradient_descent_function(X, y, alpha=0.1, beta=0.9, iter=1000)
+            all_theta, history = gradient_descent_function(
+                X, y, alpha=0.1, beta=0.9, iter=1000)
         elif method == "mini-batch":
-            all_theta, history = gradient_descent_function(X, y, alpha=0.1, iter=1000, batch_size=10)
+            all_theta, history = gradient_descent_function(
+                X, y, alpha=0.1, iter=1000, batch_size=10)
     plt.plot(history)
     plt.xlabel('Iterations')
     plt.ylabel('Cost')
@@ -212,6 +219,9 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    assert len(sys.argv) == 2, "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
-    assert sys.argv[1] == "stochastic" or sys.argv[1] == "momentum" or sys.argv[1] == "mini-batch", "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
+    sys.tracebacklimit = 0
+    assert len(
+        sys.argv) == 2, "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
+    assert sys.argv[1] == "stochastic" or sys.argv[1] == "momentum" or sys.argv[
+        1] == "mini-batch", "Usage: python stochastic_grad.py <stochastic OR momentum OR mini-batch>"
     main(sys.argv[1])

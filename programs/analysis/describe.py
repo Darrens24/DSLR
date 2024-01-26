@@ -31,7 +31,8 @@ class Describe:
         """
         self.data = data
         numeric_cols = data.select_dtypes(include=[np.number]).columns
-        self.stats = {col: {} for col in numeric_cols}
+        self.stats = {col: {}
+                      for col in numeric_cols if col != "Hogwarts House"}
         self.get_count()
         self.get_missing_values()
         self.get_mean()

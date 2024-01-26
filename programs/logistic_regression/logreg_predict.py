@@ -1,18 +1,19 @@
+from programs.logistic_regression.logreg_train import prepare_classes, prepare_features
+from programs.logistic_regression.logreg_train import sigmoid
+from programs.analysis.describe import Describe
 import numpy as np
 import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..')))
-from programs.analysis.describe import Describe
-from programs.logistic_regression.utils import load_dataset
-from programs.logistic_regression.logreg_train import sigmoid
-from programs.logistic_regression.logreg_train import prepare_classes, prepare_features
-# import matplotlib.pyplot as plt
+
+
 def load_dataset(path):
     """
     Loads the dataset from a csv file.
     We use pandas to load the csv file into a DataFrame.
+    It must be the test file.
 
     Parameters
     ----------
@@ -27,6 +28,7 @@ def load_dataset(path):
         print("Dataset not found")
         exit(1)
     return data
+
 
 def clean_normalize_data(data):
     """
@@ -62,6 +64,7 @@ def clean_normalize_data(data):
         cleaned_data[subject] = (marks[subject] - mean) / std
     return cleaned_data, houses
 
+
 def predict(data, all_theta):
     """
     Predicts the Hogwarts House of a student using the trained model.
@@ -78,7 +81,7 @@ def predict(data, all_theta):
     """
     normalize_data, houses = clean_normalize_data(data)
     X = prepare_features(normalize_data)
-    predict = sigmoid(X.dot(all_theta.T)) 
+    predict = sigmoid(X.dot(all_theta.T))
     predicted_houses = []
     for i in range(len(predict)):
         housevalue = predict[i].argmax()
@@ -91,11 +94,12 @@ def predict(data, all_theta):
         elif housevalue == 3:
             predicted_houses.append("Slytherin")
 
-    # Créez un DataFrame à partir de la liste
-    predicted_houses_df = pd.DataFrame(predicted_houses, columns=["Hogwarts House"])
+    predicted_houses_df = pd.DataFrame(
+        predicted_houses, columns=["Hogwarts House"])
     index = pd.DataFrame(data["Index"])
     final_df = pd.concat([index, predicted_houses_df], axis=1)
     final_df.to_csv("./datasets/houses.csv", index=False)
+
 
 def main(dataset_test, theta):
     data = load_dataset(dataset_test)
@@ -105,6 +109,10 @@ def main(dataset_test, theta):
         print("Theta file not found, train the model first")
         return 1
     predict(data, all_theta)
+
+
 if __name__ == "__main__":
-    assert len(sys.argv) == 3, "Usage: python logreg_predict.py <dataset_test.csv> <theta.npy>"
+    sys.tracebacklimit = 0
+    assert len(
+        sys.argv) == 3, "Usage: python logreg_predict.py <dataset_test.csv> <theta.npy>"
     main(sys.argv[1], sys.argv[2])
