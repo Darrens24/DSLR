@@ -130,7 +130,8 @@ def logistic_gradient_descent(X, y, Theta, alpha, iter):
 def prepare_features(normalized_data):
     features = pd.DataFrame(normalized_data)
     numeric_features = features.select_dtypes(include=[np.number])
-    return numeric_features.values
+    numeric_features = np.insert(numeric_features, 0, 1, axis=1)
+    return numeric_features
 
 def prepare_classes(classes):
     unique_classes = np.unique(classes)
@@ -140,16 +141,17 @@ def prepare_classes(classes):
 def logistic_regression(X, y, alpha, iter):
     m, n = X.shape
     num_labels = len(np.unique(y))
-    X = np.insert(X, 0, 1, axis=1)
-    all_theta = np.zeros((num_labels, n+1 ))
+    all_theta = np.zeros((num_labels, n))
+    J_historytab = []
     for i in range(num_labels):
-        init_theta = np.zeros(n + 1)
+        init_theta = np.zeros(n)
         y_c = np.where(y == i, 1, 0)
         theta, J_history = logistic_gradient_descent(X, y_c, init_theta, alpha, iter)
-        all_theta[i] = theta
+        all_theta[i] = theta.T
+        J_historytab.extend(J_history)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
-    return all_theta, J_history
+    return all_theta, J_historytab
     
 def clean_normalize_data(data):
     """
@@ -193,7 +195,6 @@ def main(arg):
     X = prepare_features(normalized_data)
     y = prepare_classes(classes)
     result, cost_history = logistic_regression(X, y, alpha=0.1, iter=1000)
-    print(result)
     result = np.array(result)
     plt.plot(cost_history)
     plt.xlabel('Iterations')

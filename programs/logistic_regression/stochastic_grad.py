@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score
 #     os.path.dirname(__file__), '..', '..')))
 
 
-def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
+def logistic_stochastic_gradient_descent(X, y, alpha, iter):
     """
     Performs stochastic gradient descent on the dataset (X, y).
     It uses random permutations of the dataset to update Theta,
@@ -39,28 +39,31 @@ def logistic_stochastic_gradient_descent(X, y, Theta, alpha, iter):
     Theta : numpy.ndarray
         Matrix with updated parameters.
     """
-    m = X.shape[0]
+    m, n = X.shape
     num_classes = len(np.unique(y))
-    J_history = []
-    all_theta = np.zeros((num_classes, X.shape[1]))
+    all_theta = np.zeros((num_classes, n))
+    g_J_history = []
     for i in range(num_classes):
-        Theta = np.zeros(X.shape[1])
-        y_c = (y == i).astype(int)
-        for c in range(iter):
-            indices = np.random.permutation(m)
-            X_shuffle = X[indices]
-            y_shuffle = y_c[indices]
+        Theta = np.random.randn(n)
+        y_c = np.where(y == i, 1, 0)
+        J_history = []
+
+        for iteration in range(iter):
+            random_index = np.random.randint(m)
+            X_shuffle = X[random_index]
+            y_shuffle = y_c[random_index]
             grad = logistic_gradient(X_shuffle, y_shuffle, Theta)
             Theta = Theta - alpha * grad
-            if i == 3:
-                J_history.append(logistic_cost_function(X_shuffle, y_shuffle, Theta))
-        all_theta[i] = Theta
+            J_history.append(logistic_cost_function(X, y, Theta))
+        all_theta[i] = Theta.T   
+        g_J_history.extend(J_history)
+    print(all_theta)
     accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
     print(f"Accuracy: {accuracy}")
-    return all_theta, J_history
+    return all_theta, g_J_history
 
 
-def logistic_minibatch_gradient_descent(X, y, Theta, alpha, iter, batch_size):
+def logistic_minibatch_gradient_descent(X, y, alpha, iter, batch_size):
     """
     Performs minibatch gradient descent on the dataset (X, y).
     Like stochastic gradient descent, it uses random permutations
@@ -87,19 +90,26 @@ def logistic_minibatch_gradient_descent(X, y, Theta, alpha, iter, batch_size):
     Theta : numpy.ndarray
         Matrix with updated parameters.
     """
-    m = len(y)
+    m, n = X.shape
+    num_classes = len(np.unique(y))
     J_history = []
-    for i in range(iter):
-        indices = np.random.permutation(m)
-        X = X[indices]
-        y = y[indices]
-        for j in range(0, m, batch_size):
-            # Maybe we need to reshape X and Y here
-            end = j + batch_size if j + batch_size < m else m
-            grad = logistic_gradient(X[j:end], y[j:end], Theta)
+    all_theta = np.zeros((num_classes, n))
+    for i in range(num_classes):
+        Theta = np.random.randn(n + 1, 1)
+        y_c = (y == i).astype(int)
+        for iteration in range(iter):
+            indices = np.random.choice(m, batch_size, replace=False)
+            X_shuffle = X[indices]
+            y_shuffle = y_c[indices]
+            grad = logistic_gradient(X_shuffle, y_shuffle, Theta)
             Theta = Theta - alpha * grad
-        J_history.append(logistic_cost_function(X, y, Theta))
-    return Theta, J_history
+            if i == 3:
+                J_history.append(logistic_cost_function(X, y, Theta))
+        all_theta[i] = Theta.T
+    print(all_theta)
+    accuracy = accuracy_score(y, np.argmax(sigmoid(X.dot(all_theta.T)), axis=1))
+    print(f"Accuracy: {accuracy}")
+    return all_theta, J_history
 
 
 def logistic_momentum_gradient_descent(X, y, Theta, alpha, beta, iter):
@@ -162,8 +172,9 @@ def main():
     houses_df = pd.Series(houses_array)
     X = prepare_features(cleaned_data)
     y = prepare_classes(houses_df)
-    Theta = np.zeros(X.shape[1])
-    all_theta, history = logistic_stochastic_gradient_descent(X, y, Theta, alpha=0.1, iter=1000)
+    all_theta, history = logistic_stochastic_gradient_descent(X, y, alpha=0.1, iter=1000)
+    # all_thetaMB, historyMB = logistic_minibatch_gradient_descent(X, y, alpha=0.1, iter=1000, batch_size=10)
+
     plt.plot(history)
     plt.xlabel('Iterations')
     plt.ylabel('Cost')
